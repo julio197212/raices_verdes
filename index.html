@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raíces Verdes | Tienda de Plantas y Flores</title>
+  <meta name="description" content="Sustentabilidad y diseño botánico. Plantas ornamentales de interior y exterior, flores frescas y asesoría botánica.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!--  hojas y pétalos flotantes -->
+  <canvas id="canvas-petalos" aria-hidden="true"></canvas>
+
+  <!-- Barra superior botánica -->
+  <aside class="barra-anuncio">
+    <p>🌿 Envíos de plantas vivas a domicilio | Asesoría botánica y pedidos directos por WhatsApp 🌸</p>
+  </aside>
+
+  <!-- Encabezado / Navbar -->
+  <header class="sitio-header">
+    <div class="header-container">
+      <a href="#inicio" class="logo">
+        <span class="logo-icono">🌱</span>
+        <div class="logo-texto">
+          Raíces<span>Verdes</span>
+          <small>Diseño Botánico</small>
+        </div>
+      </a>
+
+      <nav class="navegacion-principal" aria-label="Navegación principal">
+        <ul>
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#catalogo">Catálogo</a></li>
+          <li><a href="#carrito-seccion">Carrito</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-acciones">
+        <a href="#carrito-seccion" class="btn-carrito-header" aria-label="Ver carrito">
+          <span class="icono-bolsa">🛒</span>
+          <span class="carrito-texto">Mi Carrito</span>
+          <span class="badge" id="cart-counter">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section id="inicio" class="seccion-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-contenido">
+      <span class="hero-tag">Sustentabilidad & Conexión Natural</span>
+      <h1>La tienda de plantas ornamentales y flores que estabas buscando</h1>
+      <p>
+        Descubre nuestra colección botánica cuidada artesanalmente: especies purificadoras de interior, variedades resistentes para exterior y flores frescas de corte.
+      </p>
+      <div class="hero-botones">
+        <a href="#catalogo" class="boton-accion">Explorar Catálogo</a>
+        <a href="#contacto" class="boton-secundario">Asesoría Botánica</a>
+        <a href="videos.html" class="boton-secundario">Explorar Videos</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN CATÁLOGO -->
+  <section id="catalogo" class="seccion-catalogo">
+    <div class="contenedor">
+      
+      <div class="encabezado-seccion">
+        <span class="subtitulo-tag">Selección Especial</span>
+        <h2 class="titulo-seccion">Catálogo de Plantas & Flores</h2>
+        <p class="descripcion-seccion">Haz clic en cualquier imagen para desplegar sus cuidados botánicos, luz y riego sugeridos.</p>
+      </div>
+
+      <!-- Selector principal por pestañas -->
+      <div class="filtros-principales">
+        <button class="btn-tipo-cat activo" id="tab-todas" onclick="filtrarTipo('todas')">🌿 Ver Todo</button>
+        <button class="btn-tipo-cat" id="tab-plantas" onclick="filtrarTipo('plantas')">🪴 Plantas Ornamentales</button>
+        <button class="btn-tipo-cat" id="tab-flores" onclick="filtrarTipo('flores')">🌸 Flores de Jardín y Corte</button>
+      </div>
+
+      <!-- Subfiltros por ambiente -->
+      <div class="subfiltros-grupo" id="subfiltros-contenedor">
+        <!-- Generado dinámicamente -->
+      </div>
+
+      <!-- Grid dinámico de productos -->
+      <div class="grid-productos" id="contenedor-productos">
+        <!-- Inyectado por JavaScript -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN CARRITO Y CHECKOUT WHATSAPP -->
+  <section id="carrito-seccion" class="seccion-carrito">
+    <div class="contenedor">
+      
+      <div class="encabezado-seccion">
+        <span class="subtitulo-tag">Ordena Fácilmente</span>
+        <h2 class="titulo-seccion">Carrito y Pedido</h2>
+      </div>
+
+      <div class="carrito-layout">
+        
+        <!-- Artículos seleccionados -->
+        <div class="carrito-caja">
+          <div class="carrito-caja-header">
+            <h3>Artículos Seleccionados</h3>
+            <span id="items-count-text" class="items-count-badge">0 items</span>
+          </div>
+
+          <ul id="lista-carrito" class="lista-carrito">
+            <li class="carrito-vacio">Tu carrito está vacío. ¡Elige tus plantas o flores favoritas!</li>
+          </ul>
+
+          <div class="carrito-total-box">
+            <span>Total a Pagar:</span>
+            <strong class="precio-total">$<span id="total-precio">0</span> COP</strong>
+          </div>
+        </div>
+
+        <!-- Formulario de despacho para WhatsApp -->
+        <div class="checkout-caja">
+          <h3>Datos de Envío y Pedido</h3>
+          <p class="checkout-instruccion">
+            Completa tus datos y tu pedido se preparará automáticamente formateado para WhatsApp:
+          </p>
+
+          <form id="form-checkout" onsubmit="enviarPedidoWhatsApp(event)">
+            
+            <div class="campo-grupo">
+              <label for="cliente-nombre">Nombre Completo *</label>
+              <input type="text" id="cliente-nombre" placeholder="Ej. Juan Pérez" required>
+            </div>
+
+            <div class="campo-grupo">
+              <label for="cliente-telefono">Teléfono / WhatsApp *</label>
+              <input type="tel" id="cliente-telefono" placeholder="Ej. 310000000" required>
+            </div>
+
+            <div class="campo-grupo">
+              <label for="opciones-entrega">Método de Entrega / Pago *</label>
+              <select id="opciones-entrega" onchange="verificarEntrega()">
+                <option value="Transferencia ">Transferencia  (Nequi / Daviplata)</option>
+                <option value="Pago Contraentrega">Pago Contraentrega (Domicilio)</option>
+                <option value="Recoger en Tienda">Recoger en Tienda (Calle 4b bis # 51-37 Bogotá)</option>
+              </select>
+            </div>
+
+            <div class="campo-grupo" id="grupo-direccion">
+              <label for="cliente-direccion">Dirección de Entrega y Ciudad *</label>
+              <input type="text" id="cliente-direccion" placeholder="Ej. Calle 10 # 45-20, Bogotá" required>
+            </div>
+
+            <button type="submit" class="boton-enviar full-width">
+              <span>Confirmar Pedido en WhatsApp</span> 📲
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN CONTACTO Y ASESORÍA -->
+  <section id="contacto" class="seccion-contacto">
+    <div class="contenedor contacto-wrapper">
+      
+      <div class="contacto-info">
+        <span class="subtitulo-tag">Atención Personalizada</span>
+        <h2>¿Tienes dudas con tus plantas? Escríbenos</h2>
+        <p>Te brindamos asesoría gratuita sobre iluminación, riego, abonos y trasplantes.</p>
+
+        <div class="contacto-datos">
+          <p>📍 <strong>Ubicación:</strong> Calle 4b bis # 51-37- Bogotá, Colombia</p>
+          <p>📱 <strong>WhatsApp:</strong> +57 310 271 2361</p>
+          <p>💳 <strong>Nequi / Daviplata:</strong> 310 271 2361</p>
+        </div>
+      </div>
+
+      <div class="contacto-form-caja">
+        <h3>Escríbenos un Mensaje</h3>
+        <form id="formulario-contacto" class="formulario-contacto">
+  <div class="campo-grupo">
+    <label for="nombre-contacto">Tu Nombre completo</label>
+    <input 
+      type="text" 
+      id="nombre-contacto" 
+      name="nombre" 
+      placeholder="Ej: Laura Gómez" 
+      required 
+    />
+  </div>
+
+  <div class="campo-grupo">
+    <label for="telefono-contacto">Tu Número de WhatsApp</label>
+    <input 
+      type="tel" 
+      id="telefono-contacto" 
+      name="telefono" 
+      placeholder="Ej: 300 123 4567" 
+      required 
+    />
+  </div>
+
+  <div class="campo-grupo">
+    <label for="asunto-contacto">Motivo de consulta</label>
+    <select id="asunto-contacto" name="asunto">
+      <option value="Duda sobre una planta o flor">Duda sobre una planta o flor</option>
+      <option value="Consulta sobre cuidados">Consulta sobre cuidados</option>
+      <option value="Pedido personalizado o evento">Pedido personalizado o evento</option>
+      <option value="Otro motivo">Otro motivo</option>
+    </select>
+  </div>
+
+  <div class="campo-grupo">
+    <label for="mensaje-contacto">¿En qué podemos ayudarte?</label>
+    <textarea 
+      id="mensaje-contacto" 
+      name="mensaje" 
+      rows="4" 
+      placeholder="Escribe aquí tu pregunta o solicitud..." 
+      required
+    ></textarea>
+  </div>
+
+  <button type="submit" class="boton-primario boton-bloque">
+    💬 Enviar consulta por WhatsApp
+  </button>
+</form>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PIE DE PÁGINA -->
+  <footer class="sitio-footer">
+    <div class="contenedor">
+      <p>&copy; 2025 Raíces Verdes. Sustentabilidad y Diseño Botánico. Laura Martínez.</p>
+    </div>
+  </footer>
+
+  <!-- BOTÓN FLOTANTE WHATSAPP -->
+  <a href="https://wa.me/573102712361?text=Hola%20Ra%C3%ADces%20Verdes,%20quisiera%20asesor%C3%ADa%20sobre%20sus%20plantas%20y%20flores." 
+     id="floating-whatsapp" 
+     class="floating-whatsapp" 
+     target="_blank" 
+     rel="noopener" 
+     aria-label="Contactar por WhatsApp">
+    <span>💬</span>
+  </a>
+
+  <!-- Notificación Toast -->
+  <div id="toast-notificacion" class="toast-notificacion"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Videos de Cuidados Botánicos | Raíces Verdes</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* 1. OBLIGATORIO: El canvas flota de fondo sin empujar el contenido */
+    #hojas-canvas {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      pointer-events: none !important;
+      z-index: 0 !important;
+    }
+
+    /* 2. Capas por encima de las hojas */
+    .encabezado-principal,
+    main,
+    .pie-pagina {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* 3. Encabezado limpio y alineado */
+    .encabezado-principal {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(220, 230, 222, 0.8);
+      padding: 0.85rem 1.5rem;
+      position: sticky;
+      top: 0;
+    }
+
+    .contenedor-navegacion {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-tienda {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: #1a3022;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+    }
+
+    .boton-retorno {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1.25rem;
+      background-color: #24422e;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.88rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(36, 66, 46, 0.2);
+    }
+
+    .boton-retorno:hover {
+      background-color: #31583d;
+      transform: translateY(-2px);
+    }
+
+    /* 4. Portada compacta: Cero espacios vacíos */
+    .pagina-videos-hero {
+      padding: 1.8rem 1.5rem 0.5rem !important;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(235, 244, 238, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
+      margin: 0 !important;
+    }
+
+    .etiqueta-destacada {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #2d5a3b;
+      display: inline-block;
+      margin-bottom: 0.3rem;
+    }
+
+    .pagina-videos-hero .titulo-seccion {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      color: #1a3022;
+      margin: 0.2rem 0 !important;
+      line-height: 1.2;
+    }
+
+    .pagina-videos-hero .subtitulo-seccion {
+      font-size: 0.98rem;
+      color: #55685b;
+      max-width: 650px;
+      margin: 0.4rem auto 1.2rem !important;
+      line-height: 1.5;
+    }
+
+    /* 5. Cuadrícula de videos pegada al título */
+    .grid-videos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.8rem;
+      max-width: 1200px;
+      margin: 0 auto 3rem !important;
+      padding: 0 1.5rem !important;
+    }
+
+    .tarjeta-video {
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(28, 48, 35, 0.08);
+      border: 1px solid rgba(220, 230, 222, 0.8);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tarjeta-video:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(28, 48, 35, 0.14);
+    }
+
+    .contenedor-reproductor {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* Relación 16:9 */
+      background: #111e15;
+    }
+
+    .contenedor-reproductor iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .contenido-video {
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .etiqueta-video {
+      align-self: flex-start;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: #2d5a3b;
+      background: #eaf4ed;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      margin-bottom: 0.5rem;
+    }
+
+    .titulo-video {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: #1a3022;
+      margin: 0 0 0.4rem;
+      line-height: 1.3;
+    }
+
+    .descripcion-video {
+      font-size: 0.88rem;
+      color: #55685b;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .barra-retorno-inferior {
+      text-align: center;
+      padding: 2.5rem 1.5rem 4rem;
+      background: #f7faf8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas animado de hojas flotantes (en segundo plano) -->
+  <canvas id="hojas-canvas"></canvas>
+
+  <!-- Encabezado con navegación y botón de volver -->
+  <header class="encabezado-principal">
+    <div class="contenedor-navegacion">
+      <a href="index.html" class="logo-tienda">
+        <span>🌱</span>
+        <span>Raíces Verdes</span>
+      </a>
+
+      <a href="index.html" class="boton-retorno">
+        ← Volver a la Tienda
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Portada compacta -->
+    <section class="pagina-videos-hero">
+      <span class="etiqueta-destacada">GUÍA Y ASESORÍA AUDIOVISUAL</span>
+      <h1 class="titulo-seccion">Aprende a Cuidar tus Plantas & Flores</h1>
+      <p class="subtitulo-seccion">
+        Consejos prácticos, técnicas de riego, iluminación ideal y trucos para mantener tus especies radiantes en casa.
+      </p>
+    </section>
+
+    <!-- Galería con videos de cuidados -->
+    <section class="grid-videos">
+
+      <!-- Video 1: Riego y Drenaje -->
+      <article class="tarjeta-video">
+      <div class="contenedor-reproductor">
+        <video src="videos/test-dedo.mp4" controls width="100%">
+        </video>
+    </div>
+
+        </div>
+        <div class="contenido-video">
+          <span class="etiqueta-video">💧 Riego & Drenaje</span>
+          <h2 class="titulo-video">El Secreto del Riego Perfecto</h2>
+          <p class="descripcion-video">
+            Identifica cuándo la tierra necesita agua usando la regla de los dos dedos y evita pudrir las raíces por exceso de humedad.
+          </p>
+        </div>
+      </article>
+
+      <!-- Video 2: Luz Solar en Interiores -->
+      <article class="tarjeta-video">
+      <div class="contenedor-reproductor">
+        <video src="videos/luz-planta1.mp4" controls width="100%">
+        </video>
+    </div>
+        </div>
+        <div class="contenido-video">
+          <span class="etiqueta-video">☀️ Luz Solar</span>
+          <h2 class="titulo-video">Luz Directa vs. Luz Indirecta</h2>
+          <p class="descripcion-video">
+            Descubre dónde ubicar tus plantas de sombra, semisombra y sol cerca de ventanas para evitar quemaduras en las hojas.
+          </p>
+        </div>
+      </article>
+
+      <!-- Video 3: Trasplante y Sustrato -->
+      <article class="tarjeta-video">
+        <div class="contenedor-reproductor">
+        <video src="videos/tierra.mp4" controls width="100%">
+        </video>
+    </div>
+        </div>
+        <div class="contenido-video">
+          <span class="etiqueta-video">🪴 Trasplante</span>
+          <h2 class="titulo-video">Cuándo y Cómo Cambiar de Maceta</h2>
+          <p class="descripcion-video">
+            Aprende la mezcla ideal de tierra, perlita y abono orgánico para darle más espacio y nutrientes a tus raíces.
+          </p>
+        </div>
+      </article>
+
+     <!-- Video 4: Conservación de Flores Frescas -->
+      <article class="tarjeta-video">
+        <div class="contenedor-reproductor">
+        <video src="videos/corte.mp4" controls width="100%">
+        </video>
+    </div>
+        </div>
+        <div class="contenido-video">
+          <span class="etiqueta-video">🌸 Flores de Corte</span>
+          <h2 class="titulo-video">Cómo Duplicar la Vida de tus Flores</h2>
+          <p class="descripcion-video">
+            Cortes en diagonal a 45°, cambio de agua limpia y pequeños trucos caseros para mantener tus ramos frescos por semanas.
+          </p>
+        </div>
+      </article>  
+
+      <!-- Video 5: Conservación de Orquideas -->
+      <article class="tarjeta-video">
+        <div class="contenedor-reproductor">
+        <video src="videos/orquidea.mp4" controls width="100%">
+        </video>
+    </div>
+        </div>
+        <div class="contenido-video">
+          <span class="etiqueta-video">🌸 Orquideas</span>
+          <h2 class="titulo-video">Cómo cuidar tus orquideas</h2>
+          <p class="descripcion-video">
+            Las orquideas flores de gran cuidado y perduracion, dan un toque de elegancia alS espacio.
+          </p>
+        </div>
+      </article>
+
+      <!-- Video 6: flores limpias -->
+      <article class="tarjeta-video">
+        <div class="contenedor-reproductor">
+        <video src="videos/flor-limpia.mp4" controls width="100%">
+        </video>
+    </div>
+        </div>
+        <div class="contenido-video">
+          <span class="etiqueta-video">🌸 Flores Limpias</span>
+          <h2 class="titulo-video">Cómo limpiar tus flores</h2>
+          <p class="descripcion-video">
+            Las flores tambien se limpia para que protegerlas de particulas y contaminaciones
+          </p>
+        </div>
+       
+      </article>
+
+    </section>
+
+    <!-- Botón de regreso inferior -->
+    <section class="barra-retorno-inferior">
+      <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #1a3022; margin-bottom: 0.5rem;">
+        ¿Listo para elegir tu próxima planta?
+      </h3>
+      <p style="color: #55685b; margin-bottom: 1.2rem; font-size: 0.95rem;">
+        Vuelve al catálogo completo para ver nuestras especies y armar tu pedido.
+      </p>
+      <a href="index.html" class="boton-retorno">
+        ← Regresar al Catálogo Principal
+      </a>
+    </section>
+  </main>
+
+  <footer class="pie-pagina">
+    <div class="contenido-pie" style="text-align: center; padding: 1.5rem; color: #55685b; font-size: 0.85rem;">
+      <p>© 2026 Raíces Verdes - Diseño Botánico & Flores Frescas.</p>
+    </div>
+  </footer>
+
+  <!-- Script de la animación de hojas y pétalos -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const canvas = document.getElementById("hojas-canvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      function ajustarTamano() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      ajustarTamano();
+      window.addEventListener("resize", ajustarTamano);
+
+      const elementos = [];
+      const colores = ["#688a71", "#8ba893", "#e0b4b2", "#f2cdc8", "#4e7057"];
+
+      for (let i = 0; i < 24; i++) {
+        elementos.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          radio: Math.random() * 6 + 4,
+          dx: (Math.random() - 0.5) * 0.8,
+          dy: Math.random() * 1.1 + 0.6,
+          angulo: Math.random() * Math.PI * 2,
+          velocidadGiro: (Math.random() - 0.5) * 0.02,
+          esPetalo: Math.random() > 0.45,
+          color: colores[Math.floor(Math.random() * colores.length)],
+          opacidad: Math.random() * 0.4 + 0.25
+        });
+      }
+
+      function animar() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        elementos.forEach((el) => {
+          ctx.save();
+          ctx.translate(el.x, el.y);
+          ctx.rotate(el.angulo);
+          ctx.globalAlpha = el.opacidad;
+          ctx.fillStyle = el.color;
+
+          ctx.beginPath();
+          if (el.esPetalo) {
+            ctx.ellipse(0, 0, el.radio * 1.1, el.radio * 0.7, 0, 0, Math.PI * 2);
+          } else {
+            ctx.moveTo(0, -el.radio);
+            ctx.quadraticCurveTo(el.radio * 1.2, 0, 0, el.radio);
+            ctx.quadraticCurveTo(-el.radio * 1.2, 0, 0, -el.radio);
+          }
+          ctx.fill();
+          ctx.restore();
+
+          el.x += el.dx;
+          el.y += el.dy;
+          el.angulo += el.velocidadGiro;
+
+          if (el.y > canvas.height + 20) {
+            el.y = -20;
+            el.x = Math.random() * canvas.width;
+          }
+          if (el.x > canvas.width + 20) el.x = -20;
+          if (el.x < -20) el.x = canvas.width + 20;
+        });
+
+        requestAnimationFrame(animar);
+      }
+
+      animar();
+    });
+  </script>
+</body>
+</html>
+
